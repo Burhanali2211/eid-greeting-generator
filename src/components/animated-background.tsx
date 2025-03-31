@@ -73,8 +73,18 @@ export function AnimatedBackground() {
   const starsToRender = viewportSize.width < 768 ? starPositions.slice(0, 6) : starPositions;
   
   // Create randomized blobs
-  const generateBlobs = (count: number) => {
-    const blobs = [];
+  interface Blob {
+    size: number;
+    left: number;
+    top: number;
+    hue: number;
+    delay: number;
+    duration: number;
+    id: number;
+  }
+
+  const generateBlobs = (count: number): Blob[] => {
+    const blobs: Blob[] = [];
     
     for (let i = 0; i < count; i++) {
       const size = 20 + Math.random() * 15; // Size between 20-35vmin
@@ -89,7 +99,7 @@ export function AnimatedBackground() {
     
     return blobs;
   };
-  
+
   const blobs = useRef(generateBlobs(6)).current;
   
   return (
