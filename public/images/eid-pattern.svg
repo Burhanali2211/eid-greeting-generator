@@ -1,0 +1,13 @@
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="eid-pattern" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
+      <!-- Crescent Moon -->
+      <path d="M25 12.5A12.5 12.5 0 1 1 12.5 0 10 10 0 0 0 25 12.5z" fill="#f59e0b" fill-opacity="0.1"/>
+      <!-- Star -->
+      <path d="M45 20l-1.47 4.52h-4.76l3.85 2.79-1.47 4.52 3.85-2.79 3.85 2.79-1.47-4.52 3.85-2.79h-4.76z" fill="#16a34a" fill-opacity="0.1"/>
+      <!-- Ornamental Circle -->
+      <circle cx="10" cy="40" r="5" stroke="#9333ea" stroke-opacity="0.1" fill="none" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#eid-pattern)" />
+</svg> 
