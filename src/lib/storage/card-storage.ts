@@ -256,8 +256,24 @@ class CardStorage {
     const card = await this.getCard(cardId);
     if (!card) return false;
 
-    // Update the card with the new payment statuses
-    card.paymentStatus = paymentStatuses;
+    // Create paymentStatus array if it doesn't exist
+    if (!card.paymentStatus) {
+      card.paymentStatus = [];
+    }
+
+    // Merge the existing payment statuses with the new ones
+    // For each new status, update the corresponding one in the existing array
+    // or add it if it doesn't exist
+    paymentStatuses.forEach((status, index) => {
+      if (index < card.paymentStatus.length) {
+        card.paymentStatus[index] = {
+          ...card.paymentStatus[index],
+          ...status
+        };
+      } else {
+        card.paymentStatus.push(status);
+      }
+    });
     
     // Save the updated card
     await this.updateCard(card);

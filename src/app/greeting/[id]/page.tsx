@@ -219,33 +219,37 @@ export default function GreetingPage() {
             <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 font-display">
               Eid Mubarak!
             </h1>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              <span className="font-semibold">{card.formData.yourName}</span> has sent you an Eid greeting with surprise Eidi!
-            </p>
+            {card && (
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                <span className="font-semibold">{card.formData.yourName}</span> has sent you an Eid greeting with surprise Eidi!
+              </p>
+            )}
           </div>
         </div>
         
         {/* Greeting card */}
-        <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl border border-eid-gold-100 p-6 sm:p-8 mb-8 relative overflow-hidden">
-          {/* Decorative elements */}
-          <div className="absolute top-0 left-0 w-32 h-32 bg-eid-gold-200 rounded-full filter blur-3xl opacity-20 -translate-x-16 -translate-y-16"></div>
-          <div className="absolute bottom-0 right-0 w-32 h-32 bg-eid-emerald-200 rounded-full filter blur-3xl opacity-20 translate-x-16 translate-y-16"></div>
-          
-          <div className="relative z-10">
-            <div className="flex flex-col items-center text-center mb-8">
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 font-display">
-                Dear {card.formData.recipientName},
-              </h2>
-              <p className="text-lg text-gray-700 mb-6 max-w-2xl mx-auto leading-relaxed">
-                {card.formData.message}
-              </p>
-              <p className="text-gray-600">
-                Warm wishes,<br />
-                <span className="font-semibold">{card.formData.yourName}</span>
-              </p>
+        {card && (
+          <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl border border-eid-gold-100 p-6 sm:p-8 mb-8 relative overflow-hidden">
+            {/* Decorative elements */}
+            <div className="absolute top-0 left-0 w-32 h-32 bg-eid-gold-200 rounded-full filter blur-3xl opacity-20 -translate-x-16 -translate-y-16"></div>
+            <div className="absolute bottom-0 right-0 w-32 h-32 bg-eid-emerald-200 rounded-full filter blur-3xl opacity-20 translate-x-16 translate-y-16"></div>
+            
+            <div className="relative z-10">
+              <div className="flex flex-col items-center text-center mb-8">
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 font-display">
+                  Dear {card.formData.recipientName},
+                </h2>
+                <p className="text-lg text-gray-700 mb-6 max-w-2xl mx-auto leading-relaxed">
+                  {card.formData.message}
+                </p>
+                <p className="text-gray-600">
+                  Warm wishes,<br />
+                  <span className="font-semibold">{card.formData.yourName}</span>
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
         
         {isRevealed && !isCompleted ? (
           <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl border border-eid-gold-100 p-6 sm:p-8 text-center">

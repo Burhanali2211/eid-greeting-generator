@@ -21,6 +21,8 @@ import {
 import { useLocalStorage } from "@/lib/hooks/use-local-storage";
 import { EidiCard } from "@/components/eidi-card";
 import { Button } from "@/components/ui/button";
+import { cardStorage, CardData } from "@/lib/storage/card-storage";
+import { v4 as uuidv4 } from 'uuid';
 
 // Add types if not already defined elsewhere
 interface FormData {
@@ -103,20 +105,46 @@ export default function PreviewCardPage() {
     setIsCreating(true);
     
     try {
-      // Generate a unique ID (normally would be from server)
-      const randomId = Math.random().toString(36).substring(2, 15);
+      // Generate a unique ID using UUID
+      const cardId = uuidv4();
       
-      // Simulate API call with a delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Create card data object
+      const cardData: CardData = {
+        id: cardId,
+        userId: session?.user?.email || 'anonymous',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        formData: {
+          yourName: formData.yourName || '',
+          recipientName: formData.recipientName || '',
+          message: formData.message || '',
+          upiId: formData.upiId || '',
+        },
+        cardAmounts: cardAmounts,
+        sharedWith: [],
+        paymentStatus: cardAmounts.map(amount => ({
+          amount,
+          isPaid: false
+        }))
+      };
       
-      // Update state with "created" greeting
-      setGreetingId(randomId);
+      // Save to storage if available
+      if (!cardStorage) {
+        console.error("Card storage is not available");
+        toast.error("Storage not available. Please try again later.");
+        return;
+      }
+      
+      await cardStorage.saveCard(cardData);
+      
+      // Update state with created greeting
+      setGreetingId(cardId);
       setIsCreated(true);
       
       // Set the actual share URL
       if (window && window.location) {
         const baseUrl = window.location.origin;
-        setShareUrl(`${baseUrl}/greeting/${randomId}`);
+        setShareUrl(`${baseUrl}/greeting/${cardId}`);
       }
       
       toast.success("Eid greeting card created successfully!");
@@ -124,8 +152,7 @@ export default function PreviewCardPage() {
       // Clear preview selection
       handleResetPreview();
       
-      // In a real app, this would save to a database
-      // For now, we'll just redirect to a dashboard after a small delay
+      // Redirect to dashboard after a delay
       setTimeout(() => {
         router.push("/dashboard");
       }, 5000);
