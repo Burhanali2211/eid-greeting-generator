@@ -120,7 +120,7 @@ export function GreetingDisplay({ initialGreeting, isCreator = false }: Greeting
       }, 800);
       return () => clearTimeout(timer);
     }
-  }, [greeting.selected_card, greeting.viewed_by, greeting.is_expired, greeting.is_paid]);
+  }, [greeting.selected_card, greeting.viewed_by, greeting.is_expired]);
 
   // Refresh greeting data from the server with better error handling
   const refreshGreeting = useCallback(async () => {
