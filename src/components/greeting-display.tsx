@@ -73,9 +73,8 @@ export function GreetingDisplay({ initialGreeting, isCreator = false }: Greeting
         (payload) => {
           const updatedGreeting = payload.new as Greeting;
           setGreeting(updatedGreeting);
-          
           // Update payment status if it has been marked as paid
-          if (updatedGreeting.is_paid) {
+          if (updatedGreeting && 'is_paid' in updatedGreeting && updatedGreeting.is_paid) {
             setIsPaid(true);
           }
           
@@ -110,9 +109,10 @@ export function GreetingDisplay({ initialGreeting, isCreator = false }: Greeting
       // Check if this greeting has already been viewed/accessed
       setHasAccessed(!!greeting.viewed_by);
       setIsAccessExpired(!!greeting.is_expired);
-      
       // If there's a payment status, update it
-      setIsPaid(!!greeting.is_paid);
+      if ('is_paid' in greeting) {
+        setIsPaid(!!greeting.is_paid);
+      }
       
       // Add a small delay before showing success actions if card is already selected
       const timer = setTimeout(() => {

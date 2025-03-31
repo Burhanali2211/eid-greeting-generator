@@ -14,7 +14,8 @@ const missingColumns = {
   is_expired: false,
   viewed_by: false,
   upi_id: false,
-  enable_upi_payment: false
+  enable_upi_payment: false,
+  is_paid: false
 };
 
 // Type definitions for Supabase tables
@@ -30,6 +31,7 @@ export type Greeting = {
   is_expired?: boolean;
   upi_id?: string | null;
   enable_upi_payment?: boolean;
+  is_paid?: boolean;
 };
 
 // Initialize database schema if needed
@@ -81,6 +83,17 @@ export async function initializeSchema() {
       missingColumns.enable_upi_payment = true;
     }
     
+    // Check if 'is_paid' column exists
+    const isPaidResult = await supabase
+      .from('greetings')
+      .select('is_paid')
+      .limit(1);
+    
+    if (isPaidResult.error && isPaidResult.error.message.includes("does not exist")) {
+      console.log("Missing 'is_paid' column in greetings table");
+      missingColumns.is_paid = true;
+    }
+    
     if (Object.values(missingColumns).some(value => value)) {
       console.log("Schema is missing columns. The application will handle this gracefully.");
       console.log("To add these columns permanently, run the following SQL in your Supabase SQL editor:");
@@ -99,6 +112,10 @@ export async function initializeSchema() {
       
       if (missingColumns.enable_upi_payment) {
         console.log("ALTER TABLE greetings ADD COLUMN IF NOT EXISTS enable_upi_payment BOOLEAN DEFAULT FALSE;");
+      }
+      
+      if (missingColumns.is_paid) {
+        console.log("ALTER TABLE greetings ADD COLUMN IF NOT EXISTS is_paid BOOLEAN DEFAULT FALSE;");
       }
     } else {
       console.log("Database schema validation complete. All required columns exist.");
@@ -133,6 +150,10 @@ function getSafeDbObject(obj: Record<string, any>): Record<string, any> {
   
   if (missingColumns.enable_upi_payment && 'enable_upi_payment' in safeObj) {
     delete safeObj.enable_upi_payment;
+  }
+  
+  if (missingColumns.is_paid && 'is_paid' in safeObj) {
+    delete safeObj.is_paid;
   }
   
   return safeObj;
