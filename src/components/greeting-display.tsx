@@ -70,7 +70,7 @@ export function GreetingDisplay({ initialGreeting, isCreator = false }: Greeting
           table: "greetings",
           filter: `id=eq.${greeting.id}`,
         },
-        (payload) => {
+        (payload: { new: any; old: any }) => {
           const updatedGreeting = payload.new as Greeting;
           setGreeting(updatedGreeting);
           // Update payment status if it has been marked as paid
