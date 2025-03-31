@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowRight, Plus, Edit, Trash, Share2, CreditCard, ChevronRight, Gift, Wallet, Loader2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { cardStorage, CardData } from '@/lib/storage/card-storage';
+import { EidLampIcon, EidMoonIcon, EidGiftBoxIcon, PatternBackground } from '@/components/ui/icons';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -15,19 +16,37 @@ export default function DashboardPage() {
   const [deleting, setDeleting] = useState<string | null>(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState<string | null>(null);
   
-  // Set fake userId for demo purposes
-  const userId = "user-1234";
+  // Use a consistent user ID based on the browser session
+  const userId = typeof window !== 'undefined' ? 
+    localStorage.getItem('eid-user-id') || "user-1234" : 
+    "user-1234";
+  
+  // Ensure user ID is saved to localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (!localStorage.getItem('eid-user-id')) {
+        localStorage.setItem('eid-user-id', userId);
+      }
+    }
+  }, [userId]);
   
   // Load cards on component mount
   useEffect(() => {
     async function loadCards() {
       if (!cardStorage) {
+        console.error('Card storage is not available');
         setLoading(false);
         return;
       }
       
       try {
+        console.log('Loading cards for user ID:', userId);
+        // Get all cards from storage for debugging
+        const allCards = await getAllCardsFromStorage();
+        console.log('All cards in storage:', allCards);
+        
         const userCards = await cardStorage.getCardsByUser(userId);
+        console.log('User cards found:', userCards);
         setCards(userCards);
       } catch (error) {
         console.error('Error loading cards:', error);
@@ -39,6 +58,21 @@ export default function DashboardPage() {
     
     loadCards();
   }, [userId]);
+  
+  // Helper function to get all cards from storage for debugging
+  const getAllCardsFromStorage = async () => {
+    if (!cardStorage) return [];
+    
+    // Check localStorage directly
+    try {
+      const storeName = 'eid-cards';
+      const cardsJson = localStorage.getItem(storeName);
+      return cardsJson ? JSON.parse(cardsJson) : [];
+    } catch (error) {
+      console.error('Error retrieving all cards:', error);
+      return [];
+    }
+  };
   
   // Handle card sharing
   const handleShare = async (card: CardData) => {
@@ -140,22 +174,56 @@ export default function DashboardPage() {
               <p className="text-gray-600">Loading your cards...</p>
             </div>
           ) : cards.length === 0 ? (
-            <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50">
-              <div className="w-16 h-16 bg-eid-gold-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Gift className="w-8 h-8 text-eid-gold-600" />
+            <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50 relative overflow-hidden">
+              <div className="absolute inset-0 opacity-5">
+                <PatternBackground className="text-eid-gold-500" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">No Cards Created Yet</h3>
-              <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                Create your first Eid collection card to start collecting Eidi from friends and family
-              </p>
-              <Link 
-                href="/create-card"
-                className="px-6 py-2 bg-eid-emerald-500 text-white rounded-full hover:bg-eid-emerald-600 
-                          inline-flex items-center gap-2 transition-colors shadow-sm"
-              >
-                <Plus className="w-4 h-4" />
-                Create Your First Card
-              </Link>
+              <div className="relative z-10">
+                <div className="flex flex-col items-center">
+                  <div className="w-20 h-20 bg-gradient-to-r from-eid-gold-400 to-eid-gold-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <EidGiftBoxIcon className="w-10 h-10 text-white" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2">No Cards Created Yet</h3>
+                  <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                    Create your first Eid collection card to start collecting Eidi from friends and family
+                  </p>
+                  
+                  <div className="flex justify-center gap-4 mb-8">
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-eid-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <EidLampIcon className="w-6 h-6 text-eid-emerald-600" />
+                      </div>
+                      <p className="text-xs text-gray-500">Beautiful Design</p>
+                    </div>
+                    
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-eid-gold-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <EidMoonIcon className="w-6 h-6 text-eid-gold-600" />
+                      </div>
+                      <p className="text-xs text-gray-500">Eid Celebration</p>
+                    </div>
+                    
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-eid-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <Gift className="w-6 h-6 text-eid-purple-600" />
+                      </div>
+                      <p className="text-xs text-gray-500">Collect Eidi</p>
+                    </div>
+                  </div>
+                  
+                  <Link 
+                    href="/create-card"
+                    className="px-6 py-3 bg-gradient-to-r from-eid-emerald-500 to-eid-emerald-600 text-white rounded-full hover:from-eid-emerald-600 hover:to-eid-emerald-700 inline-flex items-center gap-2 transition-colors shadow-md"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Create Your First Card
+                  </Link>
+                  
+                  <div className="mt-6 text-xs text-gray-400">
+                    Created by {process.env.NEXT_PUBLIC_GITHUB_USERNAME || "Burhanali2211"}
+                  </div>
+                </div>
+              </div>
             </div>
           ) : (
             <div className="space-y-4">

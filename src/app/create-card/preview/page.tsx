@@ -105,15 +105,22 @@ export default function PreviewCardPage() {
     setIsCreating(true);
     
     try {
+      // Get/generate consistent user ID
+      const userId = typeof window !== 'undefined' ? 
+        localStorage.getItem('eid-user-id') || "user-1234" : 
+        "user-1234";
+      
+      // Save user ID if not already saved
+      if (typeof window !== 'undefined' && !localStorage.getItem('eid-user-id')) {
+        localStorage.setItem('eid-user-id', userId);
+      }
+      
       // Generate a unique ID using UUID
       const cardId = uuidv4();
       
       // Create card data object
       const cardData = {
-        id: cardId,
-        userId: session?.user?.email || 'anonymous-user-123',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        userId: userId, // Use consistent user ID
         formData: {
           yourName: formData.yourName || '',
           recipientName: formData.recipientName || '',
@@ -135,18 +142,21 @@ export default function PreviewCardPage() {
         return;
       }
       
+      // Log before saving for debugging
+      console.log("Saving card with data:", cardData);
+      
       // Save card first, before setting state
       const savedCard = await cardStorage.saveCard(cardData);
-      console.log("Card saved successfully:", savedCard.id);
+      console.log("Card saved successfully:", savedCard);
       
       // Update state with created greeting
-      setGreetingId(cardId);
+      setGreetingId(savedCard.id);
       setIsCreated(true);
       
       // Set the actual share URL
       if (window && window.location) {
         const baseUrl = window.location.origin;
-        setShareUrl(`${baseUrl}/greeting/${cardId}`);
+        setShareUrl(`${baseUrl}/greeting/${savedCard.id}`);
       }
       
       toast.success("Eid greeting card created successfully!");
