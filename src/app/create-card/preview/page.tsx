@@ -109,9 +109,9 @@ export default function PreviewCardPage() {
       const cardId = uuidv4();
       
       // Create card data object
-      const cardData: CardData = {
+      const cardData = {
         id: cardId,
-        userId: session?.user?.email || 'anonymous',
+        userId: session?.user?.email || 'anonymous-user-123',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         formData: {
@@ -135,7 +135,9 @@ export default function PreviewCardPage() {
         return;
       }
       
-      await cardStorage.saveCard(cardData);
+      // Save card first, before setting state
+      const savedCard = await cardStorage.saveCard(cardData);
+      console.log("Card saved successfully:", savedCard.id);
       
       // Update state with created greeting
       setGreetingId(cardId);
@@ -152,10 +154,11 @@ export default function PreviewCardPage() {
       // Clear preview selection
       handleResetPreview();
       
-      // Redirect to dashboard after a delay
+      // Prevent the immediate redirect to allow user to see the share link
+      // Redirect to dashboard after a longer delay (10 seconds instead of 5)
       setTimeout(() => {
         router.push("/dashboard");
-      }, 5000);
+      }, 10000);
       
     } catch (error) {
       console.error("Error creating greeting:", error);

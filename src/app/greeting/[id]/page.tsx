@@ -381,7 +381,7 @@ export default function GreetingPage() {
                           viewBox="0 0 100 100"
                         >
                           <pattern 
-                            id={`pattern-${index}`}
+                            id={`pattern-${index}-static`}
                             x="0" 
                             y="0" 
                             width="20" 
@@ -395,7 +395,7 @@ export default function GreetingPage() {
                               strokeWidth="0.5"
                             />
                           </pattern>
-                          <rect width="100%" height="100%" fill={`url(#pattern-${index})`} />
+                          <rect width="100%" height="100%" fill={`url(#pattern-${index}-static)`} />
                         </svg>
                       </div>
                       
